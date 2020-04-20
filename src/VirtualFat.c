@@ -49,6 +49,9 @@ static void read_rootdir_fatfs(uint32_t rootdir_offset,uint8_t *buf)
 		{//设置卷标
 			FAT_DIR *p=(FAT_DIR *)&(buf[0]);
 			{
+				//文件名用0x20填充
+				memset(p->DIR_Name,0x20,sizeof(p->DIR_Name));
+				//设置文件名
 				memcpy(p->DIR_Name,"Flasher ",sizeof("Flasher "));
 				p->DIR_Att=0x08;
 
