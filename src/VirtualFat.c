@@ -31,7 +31,7 @@ static VirtualFat_File fsinfo=
 {'t','x','t'},
 fsinfo_txt_read,
 NULL,
-1
+1024
 };
 
 #endif
@@ -44,7 +44,8 @@ static void init_fatfs(FAT_BPB *bpb)
 	RootDir_START=FAT2_START*2-FAT1_START;
 	FileData_START=RootDir_START+(bpb->BPB_RootEntCnt[0]+bpb->BPB_RootEntCnt[1]*256)*32/(bpb->BPB_BytsPerSec[0]+bpb->BPB_BytsPerSec[1]*256);
 #ifdef FAT16_FSINFO_TXT
-	 VirtualFat_Register_RootFile(&fsinfo);
+	VirtualFat_Unregister_RootFile(&fsinfo);
+	VirtualFat_Register_RootFile(&fsinfo);
 #endif
 }
 
@@ -95,8 +96,9 @@ static void read_fat_fatfs(uint32_t fat_offset,uint8_t *buf)
 							}
 						}
 					}
-					file_start++;
+
 				}
+				file_start+=file_size;
 
 
 			}
