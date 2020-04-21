@@ -11,7 +11,9 @@
 #include "stdint.h"
 #include "string.h"
 
-
+/*
+ * 虚拟的磁盘大小为32M,扇区大小512字节，FAT16簇大小512字节，请在充分理解下述代码时修改基础参数。
+ */
 
 //导入资源文件
 #include "RC.h"
@@ -19,18 +21,27 @@
 
 #define UNUSED_PARA(x) ((void)x)
 
-//定义存储的块数量，需要与usbd_storage_if.c中的定义保持一致
+//定义存储的块数量，需要与usbd_storage_if.c中的定义保持一致，总容量必须为32M
 #ifndef STORAGE_BLK_NBR
 #define STORAGE_BLK_NBR                  0x10000
 #endif
 
-//定义存储的块大小，需要与usbd_storage_if.c中的定义保持一致
+//定义存储的块大小，需要与usbd_storage_if.c中的定义保持一致，必须为512
 #ifndef STORAGE_BLK_SIZ
 #define STORAGE_BLK_SIZ                  0x200
 #endif
 
 //使用FAT16
 #define FAT16
+
+//定义放置在FAT16根文件的数量，此参数受到FAT16根文件数量限制，且限制注册虚拟文件的数量
+#define FAT16_Root_File_Number 4
+
+//定义卷标（小于11字符）
+#define FAT16_Volume_ID "STM32Disk"
+
+//显示VirtualFat信息文件fsinfo.txt
+#define FAT16_FSINFO_TXT
 
 #ifdef __cplusplus
 extern "C"
@@ -105,6 +116,21 @@ uint8_t	DIR_FstClusLO[2];
 uint8_t	DIR_FileSize[4];
 } FAT_DIR;
 
+//文件读写操作回调函数类型，offset为在文件中的偏移，length最大读写长度
+typedef void (*VirtualFat_RW_Op)(uint8_t *buf,size_t offset,size_t length);
+
+//虚拟文件，使用此类型实现数据交互
+typedef struct VirtualFat_File_t
+{
+char FileName[8];
+char FileName_sub[3];//文件后缀
+VirtualFat_RW_Op read;//读回调
+VirtualFat_RW_Op write;//写回调
+size_t size;
+} VirtualFat_File;
+
+
+
 //定义初始化函数，一般由STORAGE_Init_FS调用
 uint8_t VirtualFat_Init(uint8_t lun);
 
@@ -112,7 +138,14 @@ uint8_t VirtualFat_Init(uint8_t lun);
 uint8_t VirtualFat_Read(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len);
 
 //定义写函数，一般由STORAGE_Write_FS调用
-int8_t VirtualFat_Write(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len);
+uint8_t VirtualFat_Write(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len);
+
+//注册与反注册根目录文件
+//成功返回1
+//file指针所指的文件必须长期有效，不可使用局部非静态变量
+uint8_t VirtualFat_Register_RootFile(VirtualFat_File * file);
+uint8_t VirtualFat_Unregister_RootFile(VirtualFat_File * file);
+
 
 #ifdef __cplusplus
 };
