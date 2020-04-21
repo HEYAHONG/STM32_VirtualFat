@@ -120,6 +120,7 @@ uint8_t	DIR_FileSize[4];
 typedef void (*VirtualFat_RW_Op)(uint8_t *buf,size_t offset,size_t length);
 
 //虚拟文件，使用此类型实现数据交互
+//文件名需大写，小写肯可能会导致无法打开
 typedef struct VirtualFat_File_t
 {
 char FileName[8];

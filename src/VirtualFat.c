@@ -21,17 +21,27 @@ static VirtualFat_File * root_file_list[FAT16_Root_File_Number]={};
 //显示VirtualFat信息文件fsinfo.txt
 static void fsinfo_txt_read(uint8_t *buf,size_t offset,size_t length)
 {
-	memset(buf,0x20,length);
-	sprintf((char *)buf,"Virtual fstype:%s\n\r,Auth:%s\n\r","FAT16","HYH");
+	memset(buf,'\n',length);
+	{//添加UTF-8 BOM头,以便在windows下打开
+		buf[0]=0xef;
+		buf[1]=0xbb;
+		buf[2]=0xbf;
+	}
+	sprintf((char *)buf+3,
+"\
+Virtual FSType:%s\r\n\
+Author:%s\r\n\
+				","FAT16","何亚红");
 
 }
+
 static VirtualFat_File fsinfo=
 {
-{'f','s','i','n','f','o'},
-{'t','x','t'},
+{'F','S','I','N','F','O'},
+{'T','X','T'},
 fsinfo_txt_read,
 NULL,
-1024
+512
 };
 
 #endif
@@ -120,7 +130,13 @@ static void read_rootdir_fatfs(uint32_t rootdir_offset,uint8_t *buf)
 				memset(p->DIR_Name,0x20,sizeof(p->DIR_Name));
 				//设置文件名
 				memcpy(p->DIR_Name,FAT16_Volume_ID,sizeof(FAT16_Volume_ID)>11?11:sizeof(FAT16_Volume_ID));
+
 				p->DIR_Att=0x08;
+
+				p->DIR_WrtDat[0]=0x94;
+				p->DIR_WrtDat[1]=0x50;
+				p->DIR_WrtTime[0]=0x29;
+				p->DIR_WrtTime[1]=0x53;
 
 			}
 
@@ -168,7 +184,7 @@ static void read_rootdir_fatfs(uint32_t rootdir_offset,uint8_t *buf)
 						{//设置文件属性
 							p->DIR_Att=0x20;
 
-							p->DIR_NTRes=0x18;
+							//p->DIR_NTRes=0x18;
 
 							p->DIR_CrtTimeTenth=0x7f;
 
