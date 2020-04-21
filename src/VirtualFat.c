@@ -22,7 +22,7 @@ static VirtualFat_File * root_file_list[FAT16_Root_File_Number]={};
 static void fsinfo_txt_read(uint8_t *buf,size_t offset,size_t length)
 {
 	memset(buf,0x20,length);
-	sprintf(buf,"Virtual fstype:%s\n\r,Auth:%s\n\r","FAT16","HYH");
+	sprintf((char *)buf,"Virtual fstype:%s\n\r,Auth:%s\n\r","FAT16","HYH");
 
 }
 static VirtualFat_File fsinfo=
@@ -31,7 +31,7 @@ static VirtualFat_File fsinfo=
 {'t','x','t'},
 fsinfo_txt_read,
 NULL,
-512
+1
 };
 
 #endif
@@ -165,6 +165,26 @@ static void read_rootdir_fatfs(uint32_t rootdir_offset,uint8_t *buf)
 						}
 						{//设置文件属性
 							p->DIR_Att=0x20;
+
+							p->DIR_NTRes=0x18;
+
+							p->DIR_CrtTimeTenth=0x7f;
+
+							p->DIR_CrtTime[0]=0xa2;
+
+							p->DIR_CrtTime[1]=0x58;
+
+							p->DIR_CrtDate[0]=0x95;
+
+							p->DIR_CrtDate[1]=0x50;
+
+							p->DIR_WrtTime[0]=0x71;
+							p->DIR_WrtTime[1]=0x5a;
+
+							memcpy(p->DIR_LstAccDate,p->DIR_CrtDate,2);
+							memcpy(p->DIR_WrtDat,p->DIR_CrtDate,2);
+
+
 						}
 
 						{//设置文件起始簇
