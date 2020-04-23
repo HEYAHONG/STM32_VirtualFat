@@ -40,7 +40,7 @@ ErrorLevel:%d\r\n\
 当前可用的命令:\r\n\
 RESET\t重启单片机\n\r\
 		","FAT16","何亚红",errorlevel);
-	{//用空格填充文本，放置在某些文本编辑器上出现异常
+	{//用空格填充文本，防止在某些文本编辑器上出现异常
 		for(size_t i=0;i<length;i++)
 		{
 			if(buf[i]=='\0')
