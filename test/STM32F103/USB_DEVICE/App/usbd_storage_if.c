@@ -244,7 +244,7 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t blk_len)
 {
   /* USER CODE BEGIN 7 */
-  STORAGE_Write_FS(lun,buf,blk_addr,blk_len);
+  VirtualFat_Write(lun,buf,blk_addr,blk_len);
   return (USBD_OK);
   /* USER CODE END 7 */
 }

@@ -11,6 +11,9 @@
 #include "stdint.h"
 #include "string.h"
 
+//包含STM32库函数,错误时可取消包含
+#include "main.h"
+
 /*
  * 虚拟的磁盘大小为32M,扇区大小512字节，FAT16簇大小512字节，请在充分理解下述代码时修改基础参数。
  */

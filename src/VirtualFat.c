@@ -19,9 +19,12 @@ static VirtualFat_File * root_file_list[FAT16_Root_File_Number]={};
 
 #ifdef FAT16_FSINFO_TXT
 //显示VirtualFat信息文件fsinfo.txt
+
+static int8_t errorlevel=0;
+
 static void fsinfo_txt_read(uint8_t *buf,size_t offset,size_t length)
 {
-	memset(buf,'\n',length);
+	//memset(buf,' ',length);
 	{//添加UTF-8 BOM头,以便在windows下打开
 		buf[0]=0xef;
 		buf[1]=0xbb;
@@ -31,8 +34,54 @@ static void fsinfo_txt_read(uint8_t *buf,size_t offset,size_t length)
 "\
 Virtual FSType:%s\r\n\
 Author:%s\r\n\
-				","FAT16","何亚红");
+ErrorLevel:%d\r\n\
+命令使用方式:\r\n\
+    在cmd控制台中进入虚拟优盘目录并键入: echo 命令  > FSINFO.TXT\r\n\
+当前可用的命令:\r\n\
+RESET\t重启单片机\n\r\
+		","FAT16","何亚红",errorlevel);
+	{//用空格填充文本，放置在某些文本编辑器上出现异常
+		for(size_t i=0;i<length;i++)
+		{
+			if(buf[i]=='\0')
+				buf[i]=' ';
+		}
+	}
 
+}
+
+//成功返回1,比较是否写入某命令
+static uint8_t fsinfo_cmd_compare(uint8_t *buf,uint8_t *cmd)
+{
+	uint8_t ret=1;
+	for(size_t i=0;i<strlen((char *)cmd);i++)
+	{
+		if(buf[i]!=cmd[i])
+			ret=0;
+	}
+	return ret;
+}
+
+static void fsinfo_txt_write(uint8_t *buf,size_t offset,size_t length)
+{
+	errorlevel=-1;
+	if(buf[0]==0)
+	{
+		errorlevel=-2;
+	}
+	else
+	{
+		if(fsinfo_cmd_compare(buf,(uint8_t *)"RESET"))//执行复位指令
+		{
+			errorlevel=0;
+			{
+//STM32F103复位函数
+#if __CORTEX_M==3
+				NVIC_SystemReset();
+#endif
+			}
+		}
+	}
 }
 
 static VirtualFat_File fsinfo=
@@ -40,7 +89,7 @@ static VirtualFat_File fsinfo=
 {'F','S','I','N','F','O'},
 {'T','X','T'},
 fsinfo_txt_read,
-NULL,
+fsinfo_txt_write,
 512
 };
 
