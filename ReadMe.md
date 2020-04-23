@@ -10,3 +10,15 @@
 
 * 已验证方案的可行性。虚拟的FAT文件系统大小为32M,扇区大小为512字节，簇大小为512字节。
 * 代码未完成
+
+# 开发工具
+
+* STM32CudeIDE
+
+# 测试使用的硬件
+
+* STM32F103C8T6
+
+# 资源文件生成工具
+
+* [FAT引导扇区转C代码(RC.c)使用的工具](https://github.com/HEYAHONG/RCFileToCSource)
