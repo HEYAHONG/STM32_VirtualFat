@@ -5,6 +5,11 @@
 ## 特点
  * 依赖STM32 USB库。需要修改usbd_storage_if.c的STORAGE_Init_FS、STORAGE_Read_FS、STORAGE_Write_FS函数。
  * 不依赖额外的存储器件，完全是虚拟的。
+## 使用方法
+
+1.将src文件夹添加至工程中，注意：STM32CudeIDE光是添加文件夹是不能编译的，需要将新添加的文件夹的排除（Exclude）选项取消。
+
+2.修改usbd_storage_if.c
 
 # 进度
 
