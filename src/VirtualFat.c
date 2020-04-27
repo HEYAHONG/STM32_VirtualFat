@@ -139,7 +139,7 @@ static void read_fat_fatfs(uint32_t fat_offset,uint8_t *buf)
 				for(file_current=0;file_current<file_size;file_current++)
 				{
 
-					if(file_start>=fat_start_index)//文件的FAT在当前扇区有数据
+					if(file_start+file_current>=fat_start_index)//文件的FAT在当前扇区有数据
 					{
 						if((file_start+file_current-fat_start_index)<512/2)//文件数据未超出当前扇区
 						{
