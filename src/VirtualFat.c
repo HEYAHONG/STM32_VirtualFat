@@ -145,8 +145,8 @@ static void read_fat_fatfs(uint32_t fat_offset,uint8_t *buf)
 						{
 							if(file_current!=file_size-1)//是否为文件结束
 							{//指向下一簇
-								buf[(file_start+file_current-fat_start_index)*2]=(file_start+1)&0xff;
-								buf[(file_start+file_current-fat_start_index)*2+1]=((file_start+1)&0xff00)>>8;
+								buf[(file_start+file_current-fat_start_index)*2]=(file_start+file_current+1)&0xff;
+								buf[(file_start+file_current-fat_start_index)*2+1]=((file_start+file_current+1)&0xff00)>>8;
 							}
 							else
 							{//文件结束
